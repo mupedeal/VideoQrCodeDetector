@@ -1,6 +1,12 @@
-version: '3.8'
-
 services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+ 
   envio-video-api:
     build:
       context: .
@@ -10,6 +16,8 @@ services:
       - "8080:8080"
     volumes:
       - videos_data:/app/videos
+    depends_on:
+      - mongo
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     restart: always
@@ -17,3 +25,4 @@ services:
 volumes:
   videos_data:
     driver: local
+  mongo_data:

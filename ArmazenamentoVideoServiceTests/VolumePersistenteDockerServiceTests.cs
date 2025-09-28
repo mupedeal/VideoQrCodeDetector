@@ -17,7 +17,7 @@ public class VolumePersistenteDockerServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task SalvarVideoAsync_DeveSalvarArquivoERetornarId()
+    public async Task SalvarVideoAsync_DeveSalvarArquivoERetornarAnaliseVideo()
     {
         // Arrange
         var service = new VolumePersistenteDockerService(_tempPath);
@@ -32,15 +32,19 @@ public class VolumePersistenteDockerServiceTests : IDisposable
         };
 
         // Act
-        var id = await service.SalvarVideoAsync(formFile);
+        var analiseVideo = await service.SalvarVideoAsync(formFile);
 
         // Assert
-        Assert.False(string.IsNullOrWhiteSpace(id));
+        Assert.NotNull(analiseVideo);
+        Assert.False(string.IsNullOrWhiteSpace(analiseVideo.Id));
+        Assert.Equal(fileName, analiseVideo.NomeArquivo);
+        Assert.Equal("video/mp4", analiseVideo.ContentType);
 
         var arquivoSalvo = Directory.GetFiles(_tempPath)
-            .FirstOrDefault(f => Path.GetFileNameWithoutExtension(f) == id);
+            .FirstOrDefault(f => f == analiseVideo.CaminhoCompleto);
 
         Assert.NotNull(arquivoSalvo);
+        Assert.True(File.Exists(arquivoSalvo));
     }
 
     [Fact]
