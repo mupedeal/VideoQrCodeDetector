@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  envio-video-api:
+    build:
+      context: .
+      dockerfile: EnvioVideoAPI/Dockerfile
+    container_name: envio_video_api
+    ports:
+      - "8080:8080"
+    volumes:
+      - videos_data:/app/videos
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+
+volumes:
+  videos_data:
+    driver: local
