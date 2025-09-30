@@ -2,12 +2,14 @@
 using ArmazenamentoVideoService.Interfaces;
 using Domain.Entities;
 using EnvioVideoApplication.Interfaces;
+using FilaAnaliseVideoService.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace EnvioVideoApplication.Services;
 
 public class EnviarVideoService(
-    IExcluirVideoService excluirVideoService, 
+    IExcluirVideoService excluirVideoService,
+    IPublicarAnaliseVideoEventoService pubAnaliseVideoEvtSvc,
     ISalvarAnaliseVideoRepository salvarAnaliseVideoRepository,
     ISalvarVideoService salvarVideoService) : IEnviarVideoService
 {
@@ -16,6 +18,8 @@ public class EnviarVideoService(
         AnaliseVideo analiseVideo = await salvarVideoService.SalvarVideoAsync(video);
 
         await salvarAnaliseVideoRepository.SalvarAsync(analiseVideo);
+
+        await pubAnaliseVideoEvtSvc.PublicarAsync(analiseVideo);
 
         return analiseVideo.Id;
     }

@@ -6,6 +6,16 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
  
   envio-video-api:
     build:
@@ -18,9 +28,11 @@ services:
       - videos_data:/app/videos
     depends_on:
       - mongo
+      - rabbitmq
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet EnvioVideoAPI.dll"]
 
 volumes:
   videos_data:

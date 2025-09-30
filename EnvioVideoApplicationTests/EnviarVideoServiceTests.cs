@@ -2,6 +2,7 @@
 using ArmazenamentoVideoService.Interfaces;
 using Domain.Entities;
 using EnvioVideoApplication.Services;
+using FilaAnaliseVideoService.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Moq;
@@ -18,6 +19,7 @@ public class EnviarVideoServiceTests
         var mockSalvarVideo = new Mock<ISalvarVideoService>();
         var mockSalvarAnaliseRepo = new Mock<ISalvarAnaliseVideoRepository>();
         var mockExcluirVideo = new Mock<IExcluirVideoService>();
+        var mockPublicarNaFila = new Mock<IPublicarAnaliseVideoEventoService>();
 
         var fakeId = Guid.NewGuid().ToString();
         var fakeAnalise = new AnaliseVideo(
@@ -33,8 +35,12 @@ public class EnviarVideoServiceTests
         mockSalvarAnaliseRepo.Setup(r => r.SalvarAsync(It.IsAny<AnaliseVideo>()))
                              .Returns(Task.CompletedTask);
 
+        mockPublicarNaFila.Setup(r => r.PublicarAsync(It.IsAny<AnaliseVideo>()))
+                             .Returns(Task.CompletedTask);
+
         var service = new EnviarVideoService(
             mockExcluirVideo.Object,
+            mockPublicarNaFila.Object,
             mockSalvarAnaliseRepo.Object,
             mockSalvarVideo.Object
         );

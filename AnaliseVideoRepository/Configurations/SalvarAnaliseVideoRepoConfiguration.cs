@@ -17,7 +17,7 @@ public static class SalvarAnaliseVideoRepoConfiguration
             return new MongoDbRepository(conn);
         });
 
-        services.AddScoped<ISalvarAnaliseVideoRepository>(sp => sp.GetRequiredService<MongoDbRepository>());
+        services.TryAddScoped<ISalvarAnaliseVideoRepository>(sp => sp.GetRequiredService<MongoDbRepository>());
 
         return services;
     }
