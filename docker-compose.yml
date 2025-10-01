@@ -34,6 +34,22 @@ services:
     restart: always
     entrypoint: ["sh", "-c", "sleep 10 && dotnet EnvioVideoAPI.dll"]
 
+  analise-video-worker:
+    build:
+      context: .
+      dockerfile: AnaliseVideoWorker/Dockerfile
+    container_name: analise_video_worker
+    volumes:
+      - videos_data:/app/videos
+    depends_on:
+      - mongo
+      - rabbitmq
+      - envio-video-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet AnaliseVideoWorker.dll"]
+
 volumes:
   videos_data:
     driver: local

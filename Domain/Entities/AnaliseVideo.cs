@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enums;
+
+namespace Domain.Entities;
 
 public class AnaliseVideo
 {
@@ -8,8 +10,10 @@ public class AnaliseVideo
     public string Id { get; init; }
     public string NomeArquivo { get; init; }
     public string NomeUnico { get; init; }
+    public string Status { get; private set; } //StatusEnum
+    public List<ResultadoAnalise> Resultados { get; private set; } = [];
 
-    public AnaliseVideo(string nomeArquivo, string contentType, string id, string caminhoArmazenamento)
+    public AnaliseVideo(string nomeArquivo, string contentType, string id, string caminhoArmazenamento, string? status = null, List<ResultadoAnalise>? resultados = null)
     {
         ValidateContentType(contentType);
         NomeArquivo = nomeArquivo;
@@ -18,6 +22,17 @@ public class AnaliseVideo
         Id = id;
         NomeUnico = $"{Id}{Extensao}";
         CaminhoCompleto = Path.Combine(caminhoArmazenamento, NomeUnico);
+
+        if (!string.IsNullOrEmpty(status) && !Enum.IsDefined(typeof(StatusEnum), status))
+            throw new ArgumentException($"Valor inválido para status da análise. Valor informado: {status}.");
+
+        Status = status ?? StatusEnum.AGUARDANDO_PROCESSAMENTO.ToString();
+
+        if ((Status == StatusEnum.AGUARDANDO_PROCESSAMENTO.ToString()
+            || Status == StatusEnum.EM_PROCESSAMENTO.ToString()) && (resultados?.Count ?? 0) > 0)
+            throw new ArgumentException($"Foram informados resultados para uma amostra que não está com status {StatusEnum.PROCESSADO}. Status informado: {status}.");
+
+        Resultados = resultados ?? [];
     }
 
     private readonly string[] _validVideoTypes =
@@ -33,5 +48,25 @@ public class AnaliseVideo
     {
         if (!_validVideoTypes.Contains(contentType))
             throw new ArgumentException($"O arquivo enviado não é um vídeo compatível. Tipos compatíveis: ${string.Join(",", _validVideoTypes)}.");
+    }
+
+    public void IniciarProcessamento()
+    {
+        if (Status != StatusEnum.AGUARDANDO_PROCESSAMENTO.ToString())
+            throw new InvalidOperationException($"Não é permitido iniciar processamento de uma análise com status diferente de {StatusEnum.AGUARDANDO_PROCESSAMENTO}. Status atual: {Status}.");
+
+        Status = StatusEnum.EM_PROCESSAMENTO.ToString();
+    }
+
+    public void AdicionarResultados(List<ResultadoAnalise> resultados)
+    {
+        if (Status != StatusEnum.EM_PROCESSAMENTO.ToString())
+            throw new InvalidOperationException($"Não é permitido adicionar resultados a uma análise com status diferente de {StatusEnum.EM_PROCESSAMENTO}. Status atual: {Status}.");
+
+        if (Resultados.Count > 0)
+            throw new InvalidOperationException($"A análise atual já possui resultados.");
+
+        Status = StatusEnum.PROCESSADO.ToString();
+        Resultados.AddRange(resultados);
     }
 }

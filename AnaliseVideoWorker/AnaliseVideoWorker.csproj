@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-AnaliseVideoWorker-d9546673-f038-4e86-8ab7-57be6b8e3687</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
+    <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.12.0.5764" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AnaliseVideoApplication\AnaliseVideoApplication.csproj" />
+    <ProjectReference Include="..\FilaAnaliseVideoService\FilaAnaliseVideoService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="native/libcvextern.so">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  <TargetPath>libcvextern.so</TargetPath>
+	</None>
+  </ItemGroup>
+</Project>
