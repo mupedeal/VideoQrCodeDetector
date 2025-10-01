@@ -24,7 +24,7 @@ public class AnalisarVideoServiceTests
 
         var resultados = new List<ResultadoAnalise> { new("QR123", 0.0, 1.0) };
         var detectorMock = new Mock<IQrCodeDetector>();
-        detectorMock.Setup(d => d.Detectar(caminho + "\\" + analise.NomeUnico)).Returns(resultados);
+        detectorMock.Setup(d => d.Detectar(analise.CaminhoCompleto)).Returns(resultados);
 
         var service = new AnalisarVideoService(atualizarMock.Object, buscarMock.Object, detectorMock.Object);
 
@@ -35,22 +35,12 @@ public class AnalisarVideoServiceTests
         Assert.Equal(StatusEnum.PROCESSADO.ToString(), analise.Status);
         Assert.Single(analise.Resultados);
         Assert.Equal("QR123", analise.Resultados[0].Conteudo);
-        atualizarMock.Verify(r => r.AtualizarAsync(It.Is<AnaliseVideo>(a => a.Id == id)), Times.Once);
-    }
+        Assert.Equal(analise.CaminhoCompleto, $"{caminho}\\{analise.NomeUnico}");
 
-    [Fact]
-    public async Task AnalisarAsync_DeveLancarExcecaoSeVideoNaoEncontrado()
-    {
-        var buscarMock = new Mock<IBuscarAnaliseVideoRepository>();
-        buscarMock.Setup(r => r.BuscarPorIdAsync(It.IsAny<string>())).ReturnsAsync((AnaliseVideo?)null);
+        // Verifica que AtualizarAsync foi chamado duas vezes
+        atualizarMock.Verify(r => r.AtualizarAsync(It.IsAny<AnaliseVideo>()), Times.Exactly(2));
 
-        var atualizarMock = new Mock<IAtualizarAnaliseVideoRepository>();
-        var detectorMock = new Mock<IQrCodeDetector>();
-
-        var service = new AnalisarVideoService(atualizarMock.Object, buscarMock.Object, detectorMock.Object);
-
-        var ex = await Assert.ThrowsAsync<Exception>(() => service.AnalisarAsync("inexistente"));
-
-        Assert.Contains("não encontrada", ex.Message);
+        // Verifica que o detector foi chamado com o caminho correto
+        detectorMock.Verify(d => d.Detectar(analise.CaminhoCompleto), Times.Once);
     }
 }

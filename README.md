@@ -13,4 +13,5 @@ Para rodar a solução:
 	- `docker exec -it mongo_db mongosh`
 	- `use envio_video_db`
 	- `db.analises.find().pretty()`
+- A aplicação para consulta de status e resultado estará disponível em `http://localhost:9090/swagger/index.html`
 - Para encerrar a aplicação `docker-compose down`

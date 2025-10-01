@@ -15,6 +15,8 @@ public class AnalisarVideoService(
 
         analise.IniciarProcessamento();
 
+        await atualizarRepo.AtualizarAsync(analise);
+
         var resultados = detector.Detectar(analise.CaminhoCompleto);
 
         analise.AdicionarResultados(resultados);

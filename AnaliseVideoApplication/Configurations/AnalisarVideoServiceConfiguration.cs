@@ -14,6 +14,7 @@ public static class AnalisarVideoServiceConfiguration
         _ = services.ConfigurarVpDockerService()
             .ConfigurarGerenciarAnaliseVideoRepo();
 
+        services.TryAddScoped<IQrCodeDetector, QrCodeDetectorService>();
         services.TryAddScoped<IAnalisarVideoService, AnalisarVideoService>();
 
         return services;

@@ -50,6 +50,20 @@ services:
     restart: always
     entrypoint: ["sh", "-c", "sleep 10 && dotnet AnaliseVideoWorker.dll"]
 
+  consulta-analise-api:
+    build:
+      context: .
+      dockerfile: ConsultaAnaliseAPI/Dockerfile
+    container_name: consulta_analise_api
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mongo
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet ConsultaAnaliseAPI.dll"]
+
 volumes:
   videos_data:
     driver: local

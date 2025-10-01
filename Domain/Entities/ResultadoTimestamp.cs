@@ -2,9 +2,9 @@
 
 public class ResultadoTimestamp
 {
-    public double Inicio { get; init; } //$"{inicio:F2} s"
-    public double Fim { get; init; } //$"{fim:F2} s"
-    public double Duracao //$"{(fim - inicio):F2} s"
+    public double Inicio { get; init; }
+    public double Fim { get; init; }
+    public double Duracao
     {
         get
         {
