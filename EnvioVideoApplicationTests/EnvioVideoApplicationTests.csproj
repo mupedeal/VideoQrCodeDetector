@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AnaliseVideoRepository\AnaliseVideoRepository.csproj" />
     <ProjectReference Include="..\ArmazenamentoVideoService\ArmazenamentoVideoService.csproj" />
     <ProjectReference Include="..\EnvioVideoApplication\EnvioVideoApplication.csproj" />
   </ItemGroup>

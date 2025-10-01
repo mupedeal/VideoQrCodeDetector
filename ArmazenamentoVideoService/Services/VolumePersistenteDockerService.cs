@@ -26,7 +26,7 @@ public class VolumePersistenteDockerService(string videoStoragePath = "/app/vide
         return false; // vídeo não encontrado
     }
 
-    public async Task<string> SalvarVideoAsync(IFormFile? video)
+    public async Task<AnaliseVideo> SalvarVideoAsync(IFormFile? video)
     {
         if (video == null || video.Length == 0)
             throw new ArgumentException("Nenhum arquivo foi enviado.");
@@ -43,6 +43,6 @@ public class VolumePersistenteDockerService(string videoStoragePath = "/app/vide
         using var stream = File.Create(analiseVideo.CaminhoCompleto);
         await video.CopyToAsync(stream);
 
-        return analiseVideo.Id;
+        return analiseVideo;
     }
 }

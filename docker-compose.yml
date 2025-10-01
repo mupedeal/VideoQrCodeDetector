@@ -1,6 +1,22 @@
-version: '3.8'
-
 services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+ 
   envio-video-api:
     build:
       context: .
@@ -10,10 +26,45 @@ services:
       - "8080:8080"
     volumes:
       - videos_data:/app/videos
+    depends_on:
+      - mongo
+      - rabbitmq
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet EnvioVideoAPI.dll"]
+
+  analise-video-worker:
+    build:
+      context: .
+      dockerfile: AnaliseVideoWorker/Dockerfile
+    container_name: analise_video_worker
+    volumes:
+      - videos_data:/app/videos
+    depends_on:
+      - mongo
+      - rabbitmq
+      - envio-video-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet AnaliseVideoWorker.dll"]
+
+  consulta-analise-api:
+    build:
+      context: .
+      dockerfile: ConsultaAnaliseAPI/Dockerfile
+    container_name: consulta_analise_api
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mongo
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet ConsultaAnaliseAPI.dll"]
 
 volumes:
   videos_data:
     driver: local
+  mongo_data:

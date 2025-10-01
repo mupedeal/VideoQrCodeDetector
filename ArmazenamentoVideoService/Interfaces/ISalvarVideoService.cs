@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace ArmazenamentoVideoService.Interfaces
 {
     public interface ISalvarVideoService
     {
-        Task<string> SalvarVideoAsync(IFormFile video);
+        Task<AnaliseVideo> SalvarVideoAsync(IFormFile video);
     }
 }

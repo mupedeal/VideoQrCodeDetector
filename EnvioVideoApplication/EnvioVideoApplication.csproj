@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AnaliseVideoRepository\AnaliseVideoRepository.csproj" />
     <ProjectReference Include="..\ArmazenamentoVideoService\ArmazenamentoVideoService.csproj" />
+    <ProjectReference Include="..\FilaAnaliseVideoService\FilaAnaliseVideoService.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,8 @@
-﻿using ArmazenamentoVideoService.Interfaces;
+﻿using AnaliseVideoRepository.Interfaces;
+using ArmazenamentoVideoService.Interfaces;
+using Domain.Entities;
 using EnvioVideoApplication.Services;
+using FilaAnaliseVideoService.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Moq;
@@ -10,17 +13,37 @@ namespace EnvioVideoApplicationTests;
 public class EnviarVideoServiceTests
 {
     [Fact]
-    public async Task EnviarVideoAsync_ReturnsId()
+    public async Task EnviarVideoAsync_DeveSalvarAnaliseVideoERetornarId()
     {
         // Arrange
-        var mockSalvar = new Mock<ISalvarVideoService>();
-        var mockExcluir = new Mock<IExcluirVideoService>();
+        var mockSalvarVideo = new Mock<ISalvarVideoService>();
+        var mockSalvarAnaliseRepo = new Mock<ISalvarAnaliseVideoRepository>();
+        var mockExcluirVideo = new Mock<IExcluirVideoService>();
+        var mockPublicarNaFila = new Mock<IPublicarAnaliseVideoEventoService>();
 
         var fakeId = Guid.NewGuid().ToString();
-        mockSalvar.Setup(s => s.SalvarVideoAsync(It.IsAny<IFormFile>()))
-                  .ReturnsAsync(fakeId);
+        var fakeAnalise = new AnaliseVideo(
+            nomeArquivo: "video.mp4",
+            contentType: "video/mp4",
+            id: fakeId,
+            caminhoArmazenamento: "/app/videos"
+        );
 
-        var service = new EnviarVideoService(mockExcluir.Object, mockSalvar.Object);
+        mockSalvarVideo.Setup(s => s.SalvarVideoAsync(It.IsAny<IFormFile>()))
+                       .ReturnsAsync(fakeAnalise);
+
+        mockSalvarAnaliseRepo.Setup(r => r.SalvarAsync(It.IsAny<AnaliseVideo>()))
+                             .Returns(Task.CompletedTask);
+
+        mockPublicarNaFila.Setup(r => r.PublicarAsync(It.IsAny<AnaliseVideo>()))
+                             .Returns(Task.CompletedTask);
+
+        var service = new EnviarVideoService(
+            mockExcluirVideo.Object,
+            mockPublicarNaFila.Object,
+            mockSalvarAnaliseRepo.Object,
+            mockSalvarVideo.Object
+        );
 
         var content = "fake video content";
         var fileName = "video.mp4";
@@ -36,6 +59,7 @@ public class EnviarVideoServiceTests
 
         // Assert
         Assert.Equal(fakeId, result);
-
+        mockSalvarVideo.Verify(s => s.SalvarVideoAsync(formFile), Times.Once);
+        mockSalvarAnaliseRepo.Verify(r => r.SalvarAsync(fakeAnalise), Times.Once);
     }
 }
