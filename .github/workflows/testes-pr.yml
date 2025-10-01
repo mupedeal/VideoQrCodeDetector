@@ -32,3 +32,12 @@ jobs:
 
       - name: Rodar testes - EnvioVideoApplicationTests
         run: dotnet test ./EnvioVideoApplicationTests/EnvioVideoApplicationTests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Rodar testes - AnaliseVideoApplicationTests
+        run: dotnet test ./AnaliseVideoApplicationTests/AnaliseVideoApplicationTests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Rodar testes - AnaliseVideoRepositoryTests
+        run: dotnet test ./AnaliseVideoRepositoryTests/AnaliseVideoRepositoryTests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Rodar testes - FilaAnaliseVideoServiceTests
+        run: dotnet test ./FilaAnaliseVideoServiceTests/FilaAnaliseVideoServiceTests.csproj --configuration Release --no-build --verbosity normal
